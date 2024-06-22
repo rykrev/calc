@@ -19,6 +19,13 @@ button {
     align-items: center;
 }
 
+.display {
+    resize: none;
+    border-radius: 10px;
+    width: 400px;
+    height: 50px;
+}
+
 .ncontainer {
     display: flex;
     flex-direction: column;
