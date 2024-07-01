@@ -5,6 +5,24 @@ let number2 = document.querySelector(".numb");
 let operator = document.querySelector(".oper");
 let display = document.querySelector(".display");
 let buttons = document.querySelectorAll("button");
+let operatorCount = 0;
+let bClick;
+let i = 0;
+let greeting = "Welcome to the NC CORPORATIONS Calculator. If you have already read the following message before, skip it by pressing any button on the calculator. Rely on this calculator for quick math. If you encounter an error, just put in another number and it will clear itself up. Enjoy!"
+let delay = setTimeout(message, 5)
+
+message();
+
+function message() {
+    if (i < greeting.length) {
+        if (bClick) {
+        } else {
+            display.value += greeting.charAt(i);
+            i++;
+            setTimeout(message, 50);
+        }
+    }
+}
 
 function updateDisplay(value) {
     display.value = String(value);
@@ -16,35 +34,37 @@ function updateDisplay(value) {
 buttons.forEach(
     (button) => {
         button.addEventListener("click", () => {
+            bClick = true;
             if (button.classList.contains("numb") || button.classList.contains("spec")) {
                 sessionMath += button.textContent;
                 updateDisplay(sessionMath);
             } else if (button.classList.contains("oper")) {
-                if (number1 && operator && sessionMath) {
-                    operator = button.textContent;
-                    number1 = sessionMath;
-                    sessionMath = "";
-                    updateDisplay(operator);
-                } else {
-                    operator = button.textContent;
-                    number1 = sessionMath;
-                    sessionMath = "";
+                operatorCount += 1;
+                if (operatorCount >= 2) {
+                    updateDisplay("Error. Two operators cannot be selected at the same time.");
+                    resetAll();
+                    return;
                 }
+                if (!sessionMath) {
+                    updateDisplay("Error. Please select a number first.")
+                    resetAll();
+                    return;
+                } 
+                operator = button.textContent;
+                number1 = sessionMath;
+                sessionMath = "";
+                updateDisplay(operator);
             } else if (button.classList.contains("equal")) {
                 if (number1 && operator && sessionMath) {
                     number2 = sessionMath;
-                    let result = operate(parseFloat(number1), parseFloat(number2), operator)
+                    let result = operate(parseFloat(number1), parseFloat(number2), operator);
                     updateDisplay(result);
-                    number1 = "";
-                    operator = "";
-                    sessionMath = "";
-                    number2 = "";
+                    resetAll();
+                } else {
+                    updateDisplay("Error. Please complete the operation.");
                 }
             } else if (button.classList.contains("clear")) {
-                sessionMath = "";
-                number1 = "";
-                number2 = "";
-                operator = "";
+                resetAll();
                 updateDisplay("");
             }
         })
@@ -80,4 +100,12 @@ function operate(num1, num2, op) {
         endValue = divide(num1, num2)
         return endValue;
     }
+}
+
+function resetAll() {
+    sessionMath = "";
+    number1 = "";
+    number2 = "";
+    operator = "";
+    operatorCount = 0;
 }
